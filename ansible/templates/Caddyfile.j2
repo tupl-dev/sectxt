@@ -1,0 +1,14 @@
+https://{{ domain }} {
+  root * {{ app_dir }}/html
+  encode gzip zstd
+  header Strict-Transport-Security "max-age=31536000; includeSubDomains; preload"
+
+  handle /api/* {
+    reverse_proxy {{ api_address }}
+  }
+
+  handle {
+    try_files {path} /index.html
+    file_server
+  }
+}

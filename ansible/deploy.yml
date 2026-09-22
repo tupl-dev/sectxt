@@ -1,0 +1,16 @@
+---
+- name: Deployment
+  hosts: webservers
+  become: yes
+  vars_files:
+    - vars.yml
+  vars:
+    api_address: "127.0.0.1:8080"
+    api_bin_path: "../dist/backend/x86_64-unknown-linux-gnu/release/sectxt-api"
+    app_dir: "/var/www/sectxt"
+    frontend_path: "../dist/frontend"
+
+  tasks:
+    - ansible.builtin.include_tasks: common.yml
+    - ansible.builtin.include_tasks: backend.yml
+    - ansible.builtin.include_tasks: frontend.yml

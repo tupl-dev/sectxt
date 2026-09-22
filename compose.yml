@@ -1,0 +1,25 @@
+services:
+  ansible:
+    build: ./ansible
+    environment:
+      - ANSIBLE_HOST_KEY_CHECKING=False
+      - ANSIBLE_PRIVATE_KEY_FILE=/root/.ssh/id_ed25519_sectxt
+    volumes:
+      - ./ansible:/ansible
+      - ./dist:/dist
+      - ~/.ssh/keys/id_ed25519_sectxt:/tmp/id_ed25519_sectxt:ro
+    working_dir: /ansible
+
+  database:
+    image: postgres:alpine
+    restart: always
+    environment:
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_USER: postgres
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/mappers/postgresql
+
+volumes:
+  pgdata:

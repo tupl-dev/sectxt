@@ -1,0 +1,67 @@
+[workspace]
+members = ["crates/*"]
+resolver = "3"
+
+[workspace.package]
+authors = ["tupl"]
+categories = ["web-programming"]
+description = "Secret message"
+edition = "2024"
+keywords = ["cryptography", "messaging"]
+license = "GPL-3.0-or-later"
+readme = "../README.md"
+repository = "https://github.com/tupl-dev/sectxt"
+version = "0.1.0"
+
+[workspace.dependencies]
+async-trait = { version = "0.1" }
+axum = { version = "0.8" }
+bon = { version = "3.10" }
+chrono = { features = ["serde"], version = "0.4" }
+dotenvy = { version = "0.15" }
+serde = { features = ["derive"], version = "1.0" }
+serde_with = { features = ["base64"], version = "3.22" }
+sqlx = { features = ["chrono", "postgres", "runtime-tokio", "tls-rustls", "uuid"], version = "0.9" }
+thiserror = { version = "2.0" }
+tokio = { features = ["full"], version = "1.53" }
+tower-http = { features = ["compression-full", "cors", "trace"], version = "0.7" }
+tracing = { version = "0.1" }
+tracing-subscriber = { version = "0.3" }
+utoipa = { features = ["axum_extras", "uuid"], version = "5.5" }
+utoipa-axum = { version = "0.2" }
+utoipa-swagger-ui = { features = ["axum"], version = "9.0" }
+uuid = { features = ["serde", "v7"], version = "1.26" }
+
+sectxt-core = { path = "crates/sectxt-core" }
+sectxt-db = { path = "crates/sectxt-db" }
+
+[workspace.lints.clippy]
+cargo = { level = "warn", priority = -1 }
+nursery = { level = "warn", priority = -1 }
+pedantic = { level = "warn", priority = -1 }
+
+dbg_macro = "warn"
+exit = "warn"
+expect_used = "warn"
+indexing_slicing = "warn"
+missing_errors_doc = "allow"
+multiple_crate_versions = "allow"
+panic = "warn"
+ref_patterns = "warn"
+rest_pat_in_fully_bound_structs = "warn"
+str_to_string = "warn"
+string_slice = "warn"
+todo = "warn"
+try_err = "warn"
+unchecked_time_subtraction = "warn"
+undocumented_unsafe_blocks = "warn"
+unimplemented = "warn"
+unreachable = "warn"
+unwrap_in_result = "warn"
+unwrap_used = "warn"
+
+[profile.release]
+codegen-units = 1
+lto = true
+panic = "abort"
+strip = "symbols"

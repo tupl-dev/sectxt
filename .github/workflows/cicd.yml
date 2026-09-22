@@ -1,0 +1,94 @@
+name: CICD
+on:
+  pull_request:
+    branches: [main]
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+env:
+  CARGO_TERM_COLOR: always
+
+permissions:
+  contents: read
+
+jobs:
+  backend-analysis:
+    name: Backend Code Analysis
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: backend
+    steps:
+      - uses: actions/checkout@v7
+      - name: Run Format
+        run: cargo fmt --all --check --quiet
+      - name: Run Clippy
+        run: cargo clippy --all-features --all-targets -- -D warnings
+
+  backend-test:
+    name: Backend Test
+    needs: [backend-analysis]
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: backend
+    services:
+      postgres:
+        image: postgres:alpine
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U postgres"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
+    steps:
+      - uses: actions/checkout@v7
+      - name: Run Test
+        env:
+          DATABASE_URL: postgres://postgres:postgres@127.0.0.1:5432/postgres?sslmode=disable
+        run: cargo test --all-features --all-targets
+
+  frontend-analysis:
+    name: Frontend Code Analysis
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: frontend
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 24
+      - name: Install Dependencies
+        run: npm install
+      - name: API Code Gen
+        run: npx openapi-ts
+      - name: Run Linter
+        run: npx eslint "src/**/*.{js,ts,vue}"
+      - name: Run Type Check
+        run: npm run type-check
+
+  frontend-test:
+    name: Frontend Tests
+    needs: [frontend-analysis]
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: frontend
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 24
+      - name: Install Dependencies
+        run: npm install
+      - name: API Code Gen
+        run: npx openapi-ts
+      - name: Run Tests
+        run: npm run test

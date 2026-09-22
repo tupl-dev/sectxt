@@ -1,0 +1,24 @@
+---
+- name: Upload frontend files
+  ansible.builtin.copy:
+    src: "{{ frontend_path }}/"
+    dest: "{{ app_dir }}/html/"
+    directory_mode: '0755'
+    mode: '0644'
+    owner: 'www-data'
+    group: 'www-data'
+
+- name: Copy Caddy config
+  ansible.builtin.template:
+    src: 'templates/Caddyfile.j2'
+    dest: '/etc/caddy/Caddyfile'
+    mode: '0644'
+    owner: 'root'
+    group: 'root'
+  register: 'caddy_config'
+
+- name: Reload Caddy
+  ansible.builtin.systemd:
+    name: 'caddy'
+    state: 'reloaded'
+  when: 'caddy_config.changed'

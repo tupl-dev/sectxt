@@ -1,0 +1,453 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "sectxt-api",
+    "description": "Secret message",
+    "contact": {
+      "name": "tupl"
+    },
+    "license": {
+      "name": "GPL-3.0-or-later",
+      "identifier": "GPL-3.0-or-later"
+    },
+    "version": "0.1.0"
+  },
+  "servers": [
+    {
+      "url": "/api"
+    }
+  ],
+  "paths": {
+    "/message": {
+      "post": {
+        "tags": [
+          "message"
+        ],
+        "operationId": "create_message",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateMessageRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "description": "Created",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CreateMessageResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/message/{id}": {
+      "get": {
+        "tags": [
+          "message"
+        ],
+        "operationId": "get_message",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "The ID of the target message",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GetMessageWithAttachmentsResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/message/{id}/metadata": {
+      "get": {
+        "tags": [
+          "message"
+        ],
+        "operationId": "get_metadata",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "The ID of the target message",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GetMessageMetadataResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/message/{message_id}/attachment": {
+      "post": {
+        "tags": [
+          "attachment"
+        ],
+        "operationId": "create_attachment",
+        "parameters": [
+          {
+            "name": "message_id",
+            "in": "path",
+            "description": "The ID of the parent message",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateAttachmentRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "description": "Created",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CreateAttachmentResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "CreateAttachmentRequest": {
+        "type": "object",
+        "required": [
+          "ciphertext",
+          "nonce",
+          "salt"
+        ],
+        "properties": {
+          "ciphertext": {
+            "type": "string",
+            "format": "base64",
+            "example": "AAAAAAAAAAAAAA=="
+          },
+          "nonce": {
+            "type": "string",
+            "format": "base64",
+            "example": "AAAAAAAAAAAAAAAA"
+          },
+          "salt": {
+            "type": "string",
+            "format": "base64",
+            "example": "AAAAAAAAAAAAAAAAAAAAAA=="
+          }
+        }
+      },
+      "CreateAttachmentResponse": {
+        "type": "object",
+        "required": [
+          "id"
+        ],
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          }
+        }
+      },
+      "CreateMessageRequest": {
+        "type": "object",
+        "required": [
+          "burnOnRead",
+          "ciphertext",
+          "nonce",
+          "salt"
+        ],
+        "properties": {
+          "burnOnRead": {
+            "type": "boolean"
+          },
+          "ciphertext": {
+            "type": "string",
+            "format": "base64",
+            "example": "AAAAAAAAAAAAAA=="
+          },
+          "nonce": {
+            "type": "string",
+            "format": "base64",
+            "example": "AAAAAAAAAAAAAAAA"
+          },
+          "salt": {
+            "type": "string",
+            "format": "base64",
+            "example": "AAAAAAAAAAAAAAAAAAAAAA=="
+          },
+          "ttlSeconds": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "format": "int64",
+            "example": 3600,
+            "minimum": 0
+          }
+        }
+      },
+      "CreateMessageResponse": {
+        "type": "object",
+        "required": [
+          "id"
+        ],
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          }
+        }
+      },
+      "GetAttachmentResponse": {
+        "type": "object",
+        "required": [
+          "id",
+          "ciphertext",
+          "nonce",
+          "salt"
+        ],
+        "properties": {
+          "ciphertext": {
+            "type": "string",
+            "format": "base64",
+            "example": "AAAAAAAAAAAAAA=="
+          },
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "nonce": {
+            "type": "string",
+            "format": "base64",
+            "example": "AAAAAAAAAAAAAAAA"
+          },
+          "salt": {
+            "type": "string",
+            "format": "base64",
+            "example": "AAAAAAAAAAAAAAAAAAAAAA=="
+          }
+        }
+      },
+      "GetMessageMetadataResponse": {
+        "type": "object",
+        "required": [
+          "burnOnRead"
+        ],
+        "properties": {
+          "burnOnRead": {
+            "type": "boolean"
+          }
+        }
+      },
+      "GetMessageResponse": {
+        "type": "object",
+        "required": [
+          "ciphertext",
+          "nonce",
+          "salt"
+        ],
+        "properties": {
+          "ciphertext": {
+            "type": "string",
+            "format": "base64",
+            "example": "AAAAAAAAAAAAAA=="
+          },
+          "nonce": {
+            "type": "string",
+            "format": "base64",
+            "example": "AAAAAAAAAAAAAAAA"
+          },
+          "salt": {
+            "type": "string",
+            "format": "base64",
+            "example": "AAAAAAAAAAAAAAAAAAAAAA=="
+          }
+        }
+      },
+      "GetMessageWithAttachmentsResponse": {
+        "type": "object",
+        "required": [
+          "message",
+          "attachments"
+        ],
+        "properties": {
+          "attachments": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/GetAttachmentResponse"
+            }
+          },
+          "message": {
+            "$ref": "#/components/schemas/GetMessageResponse"
+          }
+        }
+      }
+    }
+  }
+}

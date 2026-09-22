@@ -1,0 +1,49 @@
+# cargo
+*.pdb
+**/*.rs.bk
+**/mutants.out*/
+Cargo.lock
+debug/
+dist/
+target/
+
+# environment
+.DS_Store
+.env
+
+# editor
+.idea/
+.vscode/
+
+# terraform
+*.tfstate
+*.tfstate.backup
+.terraform.lock.hcl
+.terraform/
+
+# ansible
+ansible/inventory.ini
+ansible/vars.yml
+
+# js
+__screenshots__/
+.eslintcache/
+*.local
+*.log
+*.timestamp-*-*.mjs
+*.tsbuildinfo
+components.d.ts
+coverage/
+cypress/screenshots/
+cypress/videos/
+dist-ssr/
+generated/
+lerna-debug.log*
+logs/
+node_modules/
+npm-debug.log*
+package-lock.json
+pnpm-debug.log*
+typed-router.d.ts
+yarn-debug.log*
+yarn-error.log*
